@@ -23,12 +23,25 @@ export default function AllPerks() {
 
   // ==================== SIDE EFFECTS WITH useEffect HOOK ====================
 
- /*
- TODO: HOOKS TO IMPLEMENT
- * useEffect Hook #1: Initial Data Loading
- * useEffect Hook #2: Auto-search on Input Change
+  // useEffect Hook #1: Initial Data Loading
+  // This runs once when the component mounts to load all perks
+  useEffect(() => {
+    loadAllPerks()
+  }, []) // Empty dependency array = run only once on mount
 
-*/
+  // useEffect Hook #2: Auto-search on Input Change
+  // This runs whenever searchQuery or merchantFilter changes
+  // Implements debouncing to avoid excessive API calls while typing
+  useEffect(() => {
+    // Set up a timeout to delay the API call
+    const timeoutId = setTimeout(() => {
+      loadAllPerks()
+    }, 500) // Wait 500ms after user stops typing
+    
+    // Cleanup function: cancel the timeout if user types again
+    // This prevents multiple API calls for each keystroke
+    return () => clearTimeout(timeoutId)
+  }, [searchQuery, merchantFilter]) // Re-run when these values change
 
   
   useEffect(() => {
@@ -105,11 +118,6 @@ export default function AllPerks() {
   
   
   return (
-    /*
-    TODO: HTML INPUT HANDLERS
- * Update state when user types in search box
- * update state when user selects filter
-    */
     <div className="max-w-6xl mx-auto space-y-6">
       
       {/* Page Title */}
@@ -136,7 +144,8 @@ export default function AllPerks() {
                 type="text"
                 className="input"
                 placeholder="Enter perk name..."
-                
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
               />
               <p className="text-xs text-zinc-500 mt-1">
                 Auto-searches as you type, or press Enter / click Search
@@ -151,7 +160,8 @@ export default function AllPerks() {
               </label>
               <select
                 className="input"
-                
+                value={merchantFilter}
+                onChange={e => setMerchantFilter(e.target.value)}
               >
                 <option value="">All Merchants</option>
                 
